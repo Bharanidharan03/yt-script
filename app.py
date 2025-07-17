@@ -6,6 +6,7 @@ from firebase_admin import credentials, auth
 from functools import wraps
 import json
 import os
+import base64
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -28,7 +29,21 @@ app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
 # Firebase Admin
-cred = credentials.Certificate(os.getenv("FIREBASE_KEY_PATH"))
+
+
+
+
+
+# Decode the Firebase key from environment variable
+firebase_b64 = os.getenv("FIREBASE_KEY_B64")
+firebase_json_path = "firebase-service-account.json"
+
+with open(firebase_json_path, "wb") as f:
+    f.write(base64.b64decode(firebase_b64))
+
+# Initialize Firebase
+cred = credentials.Certificate(firebase_json_path)
+
 
 firebase_admin.initialize_app(cred)
 
