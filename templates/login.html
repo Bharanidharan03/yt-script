@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | YT ScriptGen</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: #f4f4f4;
+        }
+
+        .login-container {
+            background: white;
+            display: inline-block;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input {
+            display: block;
+            margin: 10px auto;
+            padding: 10px;
+            width: 250px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 25px;
+            font-size: 16px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .google-btn {
+            background-color: #4285F4;
+            color: white;
+        }
+
+        .email-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        #error-message {
+            color: red;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login to YT ScriptGen</h2>
+
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+
+        <button class="email-btn" onclick="loginWithEmailPassword()">Login with Email</button>
+        <hr>
+        <button class="google-btn" onclick="loginWithGoogle()">Sign in with Google</button>
+
+        <p id="error-message"></p>
+    </div>
+    <p>Don't have an account? <a href="/signup">Sign up</a></p>
+
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+    <!-- Your JS -->
+    <script src="/static/login.js"></script>
+</body>
+</html>

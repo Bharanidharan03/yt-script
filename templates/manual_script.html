@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>🧠 Intelligent Scripting</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-white min-h-screen flex items-center justify-center px-4">
+    <form method="POST" action="/manual-script" class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg w-full max-w-2xl space-y-6">
+        <h1 class="text-3xl font-bold text-center mb-4">🧠 Generate Intelligent Script</h1>
+
+        <div>
+            <label for="topic" class="block font-semibold">Topic</label>
+            <input type="text" name="topic" required class="mt-1 w-full p-3 border rounded dark:bg-gray-700 dark:border-gray-600" placeholder="e.g. Future of AI in India">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block font-semibold">Tone</label>
+                <select name="tone" class="w-full mt-1 p-2 rounded border dark:bg-gray-700 dark:border-gray-600">
+                    <option value="informative">Informative</option>
+                    <option value="funny">Funny</option>
+                    <option value="serious">Serious</option>
+                    <option value="inspirational">Inspirational</option>
+                    <option value="casual">Casual</option>
+                    <option value="professional">Professional</option>
+                    <option value="dramatic">Dramatic</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-semibold">Language</label>
+                <select name="language" class="w-full mt-1 p-2 rounded border dark:bg-gray-700 dark:border-gray-600">
+                    <option value="english">English</option>
+                    <option value="hindi">Hindi</option>
+                    <option value="tamil">Tamil</option>
+                    <option value="english-hindi">English + Hindi</option>
+                    <option value="english-tamil">English + Tamil</option>
+                </select>
+            </div>
+        </div>
+
+        <div>
+            <label class="block font-semibold">Script Length</label>
+            <select name="length" class="w-full mt-1 p-2 rounded border dark:bg-gray-700 dark:border-gray-600">
+                <option value="short">Short (1–2 min)</option>
+                <option value="medium">Medium (3–5 min)</option>
+                <option value="long">Long (7–10 min)</option>
+            </select>
+        </div>
+
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-bold text-lg transition duration-300">
+            🚀 Generate Script
+        </button>
+    </form>
+</body>
+</html>
