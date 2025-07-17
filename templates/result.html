@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <title>Generated Scripts</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sortable/1.15.0/Sortable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #323232;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 50;
+    }
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
+  <div class="max-w-4xl mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-6 text-center">
+      🎬 {% if scripts %}Generated Scripts{% else %}Select Topics & Generate Scripts{% endif %}
+    </h1>
+
+    {% if error %}
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+      <strong class="font-bold">Error!</strong>
+      <span class="block sm:inline">{{ error }}</span>
+    </div>
+    {% endif %}
+
+    {% if scripts %}
+    <div id="scripts" class="space-y-6">
+      {% for script in scripts %}
+      <div class="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-lg">
+        <h2 class="text-xl font-semibold mb-2">Topic {{ loop.index }}: {{ script.title }}</h2>
+        {% if source == "manual" %}
+        <p class="text-sm text-indigo-500 mb-1">✨ Generated from your manual input</p>
+        {% endif %}
+        <p id="scriptText{{ loop.index0 }}" class="whitespace-pre-line">{{ script.content }}</p>
+
+        <div class="flex justify-between items-center mt-4 flex-wrap gap-2">
+          <button onclick="downloadTxt('{{ loop.index0 }}')" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">TXT</button>
+          <button onclick="downloadPdf('{{ loop.index0 }}')" class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600">PDF</button>
+          <button onclick="copyToClipboard('{{ loop.index0 }}')" class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">📋 Copy</button>
+          <button onclick="speak('{{ loop.index0 }}')" class="px-3 py-1 bg-purple-500 text-white rounded hover:bg-purple-600">🔊 Read</button>
+          <button class="px-3 py-1 bg-gray-700 text-white rounded hover:bg-gray-800">👍 Save</button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div id="toast" class="toast">Copied! ✅</div>
+
+    <div class="mt-8 text-center">
+      <a href="/trending" class="inline-block px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg">Generate More Scripts</a>
+    </div>
+
+    {% elif topics %}
+    <!-- This is for Trending Topics when user needs to select -->
+    <form method="POST" action="/generate" class="mb-8">
+      <input type="hidden" name="length" value="{{ length }}">
+      <input type="hidden" name="language" value="{{ language }}">
+      <input type="hidden" name="tone" value="{{ tone }}">
+      <input type="hidden" name="source" value="{{ source }}">
+      {% for topic in topics %}
+      <input type="hidden" name="original_topics" value="{{ topic }}">
+      {% endfor %}
+
+      <div class="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-lg mb-4">
+        <h2 class="text-xl font-semibold mb-2">Trending Topics</h2>
+        <ul class="space-y-2">
+          {% for topic in topics %}
+          <li>
+            <label class="inline-flex items-center">
+              <input type="checkbox" name="selected_topics" value="{{ topic }}" class="form-checkbox h-5 w-5 text-indigo-600 rounded focus:ring-indigo-500">
+              <span class="ml-2">{{ topic }}</span>
+            </label>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label class="block font-semibold">Script Length:</label>
+          <select name="length" class="w-full mt-1 p-2 rounded border dark:bg-gray-800 dark:border-gray-600">
+            <option value="short" {% if length == 'short' %}selected{% endif %}>Short</option>
+            <option value="medium" {% if length == 'medium' %}selected{% endif %}>Medium</option>
+            <option value="long" {% if length == 'long' %}selected{% endif %}>Long</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold">Language:</label>
+          <select name="language" class="w-full mt-1 p-2 rounded border dark:bg-gray-800 dark:border-gray-600">
+            <option value="english" {% if language == 'english' %}selected{% endif %}>English</option>
+            <option value="hindi" {% if language == 'hindi' %}selected{% endif %}>Hindi</option>
+            <option value="tamil" {% if language == 'tamil' %}selected{% endif %}>Tamil</option>
+            <option value="english-hindi" {% if language == 'english-hindi' %}selected{% endif %}>English + Hindi</option>
+            <option value="english-tamil" {% if language == 'english-tamil' %}selected{% endif %}>English + Tamil</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold">Tone:</label>
+          <select name="tone" class="w-full mt-1 p-2 rounded border dark:bg-gray-800 dark:border-gray-600">
+            <option value="informative" {% if tone == 'informative' %}selected{% endif %}>Informative</option>
+            <option value="funny" {% if tone == 'funny' %}selected{% endif %}>Funny</option>
+            <option value="serious" {% if tone == 'serious' %}selected{% endif %}>Serious</option>
+            <option value="inspirational" {% if tone == 'inspirational' %}selected{% endif %}>Inspirational</option>
+            <option value="casual" {% if tone == 'casual' %}selected{% endif %}>Casual</option>
+            <option value="professional" {% if tone == 'professional' %}selected{% endif %}>Professional</option>
+            <option value="dramatic" {% if tone == 'dramatic' %}selected{% endif %}>Dramatic</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="mt-6 w-full px-4 py-3 text-lg font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-lg">
+        🚀 Generate Scripts for Selected Topics
+      </button>
+    </form>
+    {% else %}
+    <p class="text-center text-gray-600 dark:text-gray-400">No trending topics available.</p>
+    <div class="mt-8 text-center">
+      <a href="/trending" class="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg">Try Again</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <script>
+    function copyToClipboard(index) {
+      const text = document.getElementById('scriptText' + index).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById("toast");
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2000);
+      });
+    }
+
+    function downloadTxt(index) {
+      const text = document.getElementById('scriptText' + index).innerText;
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'script_' + index + '.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function downloadPdf(index) {
+      const text = document.getElementById('scriptText' + index).innerText;
+      const doc = new window.jspdf.jsPDF();
+      doc.text(text, 10, 10);
+      doc.save('script_' + index + '.pdf');
+    }
+
+    function speak(index) {
+      const text = document.getElementById('scriptText' + index).innerText;
+      const utterance = new SpeechSynthesisUtterance(text);
+      speechSynthesis.speak(utterance);
+    }
+
+    const scriptsContainer = document.getElementById('scripts');
+    if (scriptsContainer) {
+      Sortable.create(scriptsContainer, { animation: 150 });
+    }
+  </script>
+</body>
+</html>

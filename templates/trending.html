@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generate Script – YT ScriptGen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-800 dark:text-white transition-all duration-300">
+    <div class="min-h-screen flex flex-col items-center justify-center px-4 py-8">
+        <h1 class="text-3xl md:text-4xl font-bold mb-6">🎥 Find Trending Topics</h1>
+
+        {% if error %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <strong class="font-bold">Error!</strong>
+            <span class="block sm:inline">{{ error }}</span>
+        </div>
+        {% endif %}
+
+        <form method="POST" action="/trending" class="grid gap-4 w-full max-w-2xl mb-8">
+            <div>
+                <label class="block font-semibold">YouTube Category:</label>
+                <select name="domain" class="w-full mt-1 p-2 rounded border dark:bg-gray-800 dark:border-gray-600" required>
+                    <option value="all">All Trending</option>
+                    {% for id, name in youtube_categories.items() %}
+                    <option value="{{ name }}" {% if fallback_data and fallback_data.domain == name %}selected{% endif %}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Select a category to find trending videos within it.</p>
+            </div>
+            <div>
+                <label class="block font-semibold">Max Number of Topics:</label>
+                <input type="number" name="count" min="1" max="10" value="{{ fallback_data.max_topics if fallback_data else 5 }}" class="w-full mt-1 p-2 rounded border dark:bg-gray-800 dark:border-gray-600" required />
+            </div>
+            <div>
+                <label class="block font-semibold">Script Length:</label>
+                <select name="length" class="w-full mt-1 p-2 rounded border dark:bg-gray-800 dark:border-gray-600">
+                    <option value="short" {% if fallback_data and fallback_data.length == 'short' %}selected{% endif %}>Short</option>
+                    <option value="medium" {% if not fallback_data or not fallback_data.length or fallback_data.length == 'medium' %}selected{% endif %}>Medium</option>
+                    <option value="long" {% if fallback_data and fallback_data.length == 'long' %}selected{% endif %}>Long</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-semibold">Language:</label>
+                <select name="language" class="w-full mt-1 p-2 rounded border dark:bg-gray-800 dark:border-gray-600">
+                    <option value="english" {% if not fallback_data or not fallback_data.language or fallback_data.language == 'english' %}selected{% endif %}>English</option>
+                    <option value="hindi" {% if fallback_data and fallback_data.language == 'hindi' %}selected{% endif %}>Hindi</option>
+                    <option value="tamil" {% if fallback_data and fallback_data.language == 'tamil' %}selected{% endif %}>Tamil</option>
+                    <option value="english-hindi" {% if fallback_data and fallback_data.language == 'english-hindi' %}selected{% endif %}>English + Hindi</option>
+                    <option value="english-tamil" {% if fallback_data and fallback_data.language == 'english-tamil' %}selected{% endif %}>English + Tamil</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-semibold">Tone:</label>
+                <select name="tone" class="w-full mt-1 p-2 rounded border dark:bg-gray-800 dark:border-gray-600">
+                    <option value="informative" {% if not fallback_data or not fallback_data.tone or fallback_data.tone == 'informative' %}selected{% endif %}>Informative</option>
+                    <option value="funny" {% if fallback_data and fallback_data.tone == 'funny' %}selected{% endif %}>Funny</option>
+                    <option value="serious" {% if fallback_data and fallback_data.tone == 'serious' %}selected{% endif %}>Serious</option>
+                    <option value="inspirational" {% if fallback_data and fallback_data.tone == 'inspirational' %}selected{% endif %}>Inspirational</option>
+                    <option value="casual" {% if fallback_data and fallback_data.tone == 'casual' %}selected{% endif %}>Casual</option>
+                    <option value="professional" {% if fallback_data and fallback_data.tone == 'professional' %}selected{% endif %}>Professional</option>
+                    <option value="dramatic" {% if fallback_data and fallback_data.tone == 'dramatic' %}selected{% endif %}>Dramatic</option>
+                </select>
+            </div>
+            <button type="submit" class="mt-6 w-full px-4 py-3 text-lg font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-lg">
+                🔍 Find YouTube Trends
+            </button>
+        </form>
+
+        {% if error %}
+        <div class="mt-8">
+            <h2 class="text-xl font-semibold mb-2">Try Other Sources</h2>
+            <form method="POST" action="/fallback_trending" class="grid gap-4 w-full max-w-md">
+                <input type="hidden" name="count" value="{{ fallback_data.max_topics if fallback_data else 5 }}">
+                <input type="hidden" name="length" value="{{ fallback_data.length if fallback_data else 'medium' }}">
+                <input type="hidden" name="language" value="{{ fallback_data.language if fallback_data else 'english' }}">
+                <input type="hidden" name="tone" value="{{ fallback_data.tone if fallback_data else 'informative' }}">
+                <button type="submit" class="px-4 py-3 text-lg font-bold bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-lg">
+                    📰 Get Reddit & News Trends
+                </button>
+            </form>
+        </div>
+        {% endif %}
+
+        <div class="fixed top-6 right-6">
+            <button id="themeToggle" class="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-2 rounded-full shadow">
+                🌙
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+        });
+    </script>
+</body>
+</html>

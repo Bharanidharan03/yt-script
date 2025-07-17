@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Content Creator | YT ScriptGen Hub</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 30px;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #f0f4ff, #ffffff);
+      color: #333;
+    }
+
+    h2 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+
+    .creator-container {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .form-box, .requests-box {
+      background: #fff;
+      padding: 20px 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #2a7bbd;
+    }
+
+    .task-item {
+      margin-bottom: 25px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 15px;
+    }
+
+    .back-btn {
+      margin-top: 30px;
+      display: inline-block;
+      text-decoration: none;
+      background-color: #666;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 5px;
+    }
+
+    .back-btn:hover {
+      background-color: #444;
+    }
+
+    .status-accepted {
+      color: green;
+      font-weight: bold;
+    }
+
+    .status-rejected {
+      color: red;
+      font-weight: bold;
+    }
+
+    .status-pending {
+      color: orange;
+      font-weight: bold;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🧑‍💻 Content Creator Dashboard</h2>
+
+  <div class="creator-container">
+
+    <!-- 📤 Task Posting Form -->
+    <div class="form-box">
+      <h3>📤 Post a Task</h3>
+      <form method="POST" action="/creator">
+        <label for="need">What do you need?</label>
+        <input type="text" id="need" name="need" required>
+
+        <label for="duration">Days to finish</label>
+        <input type="number" id="duration" name="duration" min="1" required>
+
+        <label for="budget">Budget (₹)</label>
+        <input type="number" id="budget" name="budget" min="0" required>
+
+        <button type="submit">Post Task</button>
+      </form>
+    </div>
+
+    <!-- 🧾 View Posted Tasks and Responses -->
+    <div class="requests-box">
+      <h3>📄 Your Posted Tasks & Freelancer Responses</h3>
+
+      {% if posts %}
+        {% for task in posts %}
+          {% if task.posted_by == user_email %}
+            <div class="task-item">
+              <p><strong>Task:</strong> {{ task.need }}</p>
+              <p><strong>Duration:</strong> {{ task.duration }} day(s)</p>
+              <p><strong>Budget:</strong> ₹{{ task.budget }}</p>
+              <p><strong>Status:</strong>
+                {% if task.status == "accepted" %}
+                  <span class="status-accepted">Accepted</span>
+                {% elif task.status == "rejected" %}
+                  <span class="status-rejected">Rejected</span>
+                {% elif task.status == "pending" %}
+                  <span class="status-pending">Pending</span>
+                {% else %}
+                  Open
+                {% endif %}
+              </p>
+
+              {% if task.freelancer_email %}
+                <p><strong>Freelancer:</strong> {{ task.freelancer_email }}</p>
+                <p><strong>Freelancer Message:</strong><br>{{ task.freelancer_message }}</p>
+
+                {% if task.status == "pending" %}
+                  <form method="POST" action="/creator-requests">
+                    <input type="hidden" name="post_id" value="{{ loop.index0 }}">
+                    <button name="action" value="accept">✅ Accept</button>
+                    <button name="action" value="reject">❌ Reject</button>
+                  </form>
+                {% endif %}
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <p>No tasks posted yet.</p>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <a href="/hub" class="back-btn">⬅ Back to Hub</a>
+
+</body>
+</html>

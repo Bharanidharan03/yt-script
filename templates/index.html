@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YT ScriptGen – Smart Script Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          animation: {
+            float: "float 3s ease-in-out infinite",
+            fadeIn: "fadeIn 1s ease-out forwards",
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-8px)' },
+            },
+            fadeIn: {
+              from: { opacity: 0 },
+              to: { opacity: 1 },
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #f9fafb, #dbeafe, #fce7f3);
+    }
+  </style>
+</head>
+<body class="text-gray-800 dark:text-white transition-all duration-300">
+
+  <div class="min-h-screen flex flex-col justify-center items-center px-6 text-center animate-fadeIn">
+    <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-6">🎬 YT ScriptGen</h1>
+    <p class="text-lg md:text-xl max-w-2xl">
+      Generate high-quality, SEO-optimized YouTube scripts powered by AI. Based on trending topics, manual inputs, or by hiring creators.
+    </p>
+
+    <!-- Feature Buttons -->
+    <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
+      <a href="/trending" class="bg-blue-600 text-white p-6 rounded-2xl shadow-xl transform hover:scale-105 transition duration-300 animate-float hover:shadow-blue-500/50">
+        <h2 class="text-xl font-bold mb-2">🚀 Trending Generator</h2>
+        <p>Choose trending topics from YouTube, Reddit, and News</p>
+      </a>
+
+      <a href="/manual-script" class="bg-pink-600 text-white p-6 rounded-2xl shadow-xl transform hover:scale-105 transition duration-300 animate-float hover:shadow-pink-500/50">
+        <h2 class="text-xl font-bold mb-2">🧠 Intelligent Scripting</h2>
+        <p>Enter your own topic & generate a script directly</p>
+      </a>
+
+      <a href="/hub" class="bg-green-600 text-white p-6 rounded-2xl shadow-xl transform hover:scale-105 transition duration-300 animate-float hover:shadow-green-500/50">
+        <h2 class="text-xl font-bold mb-2">📁 Creator & Freelancer Hub</h2>
+        <p>Post jobs or offer editing/design services</p>
+      </a>
+    </div>
+
+    <!-- Start Button -->
+    <div class="mt-12">
+      <a href="/trending" class="inline-block px-8 py-4 text-lg font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg transition duration-300">
+        🚀 Start Generating Now
+      </a>
+    </div>
+
+    <!-- Dark Mode Toggle -->
+    <div class="fixed top-6 right-6">
+      <button id="themeToggle" class="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 p-2 rounded-full shadow">
+        🌙
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const toggle = document.getElementById('themeToggle');
+    toggle.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+    });
+  </script>
+</body>
+</html>
