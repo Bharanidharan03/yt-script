@@ -4,12 +4,17 @@ import google.generativeai as genai
 import praw
 import time
 from flask import Flask, request, render_template
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  # Loads the .env file
 
 # ─── API KEYS (Directly Embedded - USE WITH CAUTION) ───────────────
-YOUTUBE_API_KEY = "AIzaSyC_cs1a2AaKzSggU4D0q_t1gasPDFiPFWQ"
-REDDIT_CLIENT_ID = "VCdisDPPEbyk8lTnc5iVWg"
-REDDIT_CLIENT_SECRET = "KwvUNyVjOJSWcFuwOYqzl37TLPZ69g"
-GEMINI_API_KEY = "AIzaSyBVWVpw2J3gJs7-ph1-iaj0BGXuwUdc2p0"
+YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
+REDDIT_CLIENT_ID = os.getenv("REDDIT_CLIENT_ID")
+REDDIT_CLIENT_SECRET = os.getenv("REDDIT_CLIENT_SECRET")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
 
 # ─── INITIAL SETUP ──────────────────────────────────────────
 if GEMINI_API_KEY == "YOUR_GEMINI_API_KEY":
