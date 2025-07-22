@@ -31,6 +31,8 @@
         {% set has_requests = true %}
         <div class="card">
           <p><strong>Task:</strong> {{ post.need }}</p>
+          <p><strong>Budget:</strong> ₹{{ post.budget }}</p>
+          <p><strong>Time Required:</strong> {{ post.days }} day{{ 's' if post.days != '1' else '' }}</p>
           <p><strong>Freelancer Email:</strong> {{ post.freelancer_email }}</p>
           <p><strong>Message:</strong> {{ post.freelancer_message or "No message provided" }}</p>
 

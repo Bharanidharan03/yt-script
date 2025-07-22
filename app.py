@@ -6,7 +6,6 @@ from firebase_admin import credentials, auth
 from functools import wraps
 import json
 import os
-import base64
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -29,21 +28,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY")
 
 # Firebase Admin
-
-
-
-
-
-# Decode the Firebase key from environment variable
-firebase_b64 = os.getenv("FIREBASE_KEY_B64")
-firebase_json_path = "firebase-service-account.json"
-
-with open(firebase_json_path, "wb") as f:
-    f.write(base64.b64decode(firebase_b64))
-
-# Initialize Firebase
-cred = credentials.Certificate(firebase_json_path)
-
+cred = credentials.Certificate(os.getenv("FIREBASE_KEY_PATH"))
 
 firebase_admin.initialize_app(cred)
 
@@ -209,18 +194,22 @@ def creator_page():
     tasks = load_tasks()
     return render_template('creator.html', posts=tasks, user_email=session.get('user_email'))
 
-@app.route('/freelancer', methods=['GET', 'POST'])
+@app.route('/freelancer', methods=['GET'])
 @login_required
 def freelancer_page():
-    global freelancer_notifications
-    creator_posts = load_tasks()
-    user_email = session.get('user_email')
+    user_email = session.get("user_email")
+    notification = freelancer_notifications.get(user_email)
 
-    # ✅ Check for notification
-    notification = freelancer_notifications.pop(user_email, None)
+    # Load all tasks
+    with open("data/tasks.json", "r") as f:
+        all_posts = json.load(f)
 
-    return render_template('freelancer.html', posts=creator_posts, user_email=user_email, notification=notification)
-
+    return render_template(
+        "freelancer.html",
+        posts=all_posts,
+        user_email=user_email,
+        notification=notification
+    )
 
 @app.route('/respond', methods=['POST'])
 @login_required
@@ -231,38 +220,80 @@ def respond():
 
     tasks = load_tasks()
 
+    # Basic validation
     if 0 <= post_id < len(tasks):
-        tasks[post_id]['freelancer_email'] = freelancer_email
-        tasks[post_id]['freelancer_message'] = freelancer_message
-        tasks[post_id]['status'] = 'pending'
-        save_tasks(tasks)
-        flash("✅ Request sent to creator!")
+        task = tasks[post_id]
+
+        # If task already assigned, prevent overwrite
+        if task.get("status") in ["accepted"]:
+            flash("❌ This task has already been accepted by another freelancer.")
+        # Prevent duplicate requests
+        elif task.get("freelancer_email") == freelancer_email:
+            flash("⚠️ You’ve already requested this task.")
+        else:
+            task['freelancer_email'] = freelancer_email
+            task['freelancer_message'] = freelancer_message
+            task['status'] = 'pending'
+            save_tasks(tasks)
+            flash("✅ Request sent to creator!")
+
+    else:
+        flash("❌ Invalid task selected.")
 
     return redirect(url_for('freelancer_page'))
+
 
 @app.route('/creator-requests', methods=['GET', 'POST'])
 @login_required
 def creator_requests():
-    global creator_posts, freelancer_notifications
     creator_email = session.get('user_email')
+
+    # 🔄 Load all tasks
+    with open('data/tasks.json', 'r') as f:
+        all_tasks = json.load(f)
 
     if request.method == 'POST':
         post_id = int(request.form.get('post_id'))
         action = request.form.get('action')
 
-        if 0 <= post_id < len(creator_posts):
-            task = creator_posts[post_id]
-            if action == 'accept':
-                task['status'] = 'accepted'
+        # Get all tasks posted by this creator
+        creator_tasks = [task for task in all_tasks if task.get("posted_by") == creator_email and task.get("status") == "pending"]
 
-                # ✅ Notify the freelancer
-                freelancer_email = task.get('freelancer_email')
-                if freelancer_email:
-                    freelancer_notifications[freelancer_email] = f"🎉 Your request for '{task['need']}' was accepted!"
-            elif action == 'reject':
-                task['status'] = 'rejected'
+        if 0 <= post_id < len(creator_tasks):
+            selected_task = creator_tasks[post_id]
+            need = selected_task["need"]
+            selected_freelancer_email = selected_task["freelancer_email"]
+
+            if action == "accept":
+                # Accept this one and reject all others for the same task
+                for task in all_tasks:
+                    if task.get("posted_by") == creator_email and task.get("need") == need:
+                        if task.get("freelancer_email") == selected_freelancer_email:
+                            task["status"] = "accepted"
+                        else:
+                            task["status"] = "rejected"
+            elif action == "reject":
+                # Only reject the selected one
+                for task in all_tasks:
+                    if (
+                        task.get("posted_by") == creator_email and
+                        task.get("freelancer_email") == selected_freelancer_email and
+                        task.get("need") == need
+                    ):
+                        task["status"] = "rejected"
+
+        # 🔄 Save updates
+        with open('data/tasks.json', 'w') as f:
+            json.dump(all_tasks, f, indent=2)
 
         return redirect(url_for('creator_requests'))
+
+    # GET Method
+    # Show pending requests for this creator
+    creator_posts = [
+        task for task in all_tasks
+        if task.get("posted_by") == creator_email and task.get("status") == "pending" and task.get("freelancer_email")
+    ]
 
     return render_template('creator_requests.html', posts=creator_posts, creator_email=creator_email)
 

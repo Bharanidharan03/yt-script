@@ -1,135 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Freelancer | YT ScriptGen Hub</title>
-  <link rel="stylesheet" href="/static/style.css">
-  <style>
-    body {
-      margin: 0;
-      padding: 30px;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #fdfbfb, #ebedee);
-      color: #2c3e50;
-    }
-
-    h2 {
-      margin-bottom: 25px;
-      color: #2c3e50;
-    }
-
-    .task-list {
-      display: flex;
-      flex-direction: column;
-      gap: 25px;
-      animation: fadeIn 0.8s ease-in-out;
-    }
-
-    .task-card {
-      background: #fff;
-      border-radius: 10px;
-      padding: 20px 25px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      transition: transform 0.3s ease;
-    }
-
-    .task-card:hover {
-      transform: scale(1.01);
-    }
-
-    .task-card p {
-      margin: 8px 0;
-      font-size: 15px;
-    }
-
-    textarea {
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      margin-top: 8px;
-      font-size: 14px;
-      resize: vertical;
-    }
-
-    button {
-      background-color: #27ae60;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 15px;
-      margin-top: 10px;
-      transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #1f8f4b;
-    }
-
-    .no-tasks {
-      font-size: 16px;
-      color: #777;
-    }
-
-    .back-btn {
-      margin-top: 30px;
-      display: inline-block;
-      text-decoration: none;
-      background-color: #666;
-      color: white;
-      padding: 8px 12px;
-      border-radius: 5px;
-    }
-
-    .back-btn:hover {
-      background-color: #444;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(25px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Freelancer Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .task-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .task-box {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            width: 300px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .task-box h3 {
+            margin-top: 0;
+        }
+        .status {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .request-form {
+            margin-top: 10px;
+        }
+        textarea {
+            width: 100%;
+            height: 60px;
+            resize: none;
+            margin-bottom: 10px;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #218838;
+        }
+    </style>
 </head>
 <body>
+    <h1>Available Tasks</h1>
 
-  <h2>💼 Freelancer Dashboard</h2>
-
-  <div class="task-list">
-    {% if posts %}
-      {% for post in posts %}
-        <div class="task-card">
-          <p><strong>Topic:</strong> {{ post.need }}</p>
-          <p><strong>Deadline:</strong> {{ post.duration }} days</p>
-          <p><strong>Budget:</strong> ₹{{ post.budget }}</p>
-
-          <form method="POST" action="/respond">
-            <input type="hidden" name="post_id" value="{{ loop.index0 }}">
-            <label for="message-{{ loop.index0 }}"><strong>📋 Your contact & experience:</strong></label>
-            <textarea id="message-{{ loop.index0 }}" name="message" rows="4" placeholder="(Include phone, email/whatsapp/insta, skills, experience, expected pay...) all in one paragraph." required></textarea>
-            <button type="submit">📨 Submit Request</button>
-          </form>
-        </div>
-      {% endfor %}
-    {% else %}
-      <p class="no-tasks">No tasks available right now. Check back later!</p>
-    {% endif %}
-  </div>
-
-  <a href="/hub" class="back-btn">⬅ Back to Hub</a>
-{% if notification %}
-  <div style="padding: 15px; background: #d4edda; color: #155724; border-radius: 6px; margin-bottom: 20px;">
-    {{ notification }}
-  </div>
-{% endif %}
-
+    <div class="task-container">
+        {% for post in posts %}
+            <div class="task-box">
+                <h3>{{ post.need }}</h3>
+                <p><strong>Budget:</strong> ₹{{ post.budget }}</p>
+                <p><strong>Duration:</strong>
+                    {% if post.duration %}
+                        {{ post.duration }} day{{ 's' if post.duration != '1' else '' }}
+                    {% else %}
+                        Not specified
+                    {% endif %}
+                </p>
+                {% if post.freelancer_email == user_email %}
+                    <p class="status">
+                        🟡 Request Status: <strong>{{ post.status }}</strong>
+                    </p>
+                    <p><strong>Your message:</strong> {{ post.freelancer_message }}</p>
+                {% elif not post.freelancer_email %}
+                    <form class="request-form" method="POST" action="/respond">
+                        <textarea name="message" placeholder="Write your request message..." required></textarea>
+                        <input type="hidden" name="post_id" value="{{ loop.index0 }}">
+                        <button type="submit">Send Request</button>
+                    </form>
+                {% else %}
+                    <p class="status">⚠️ This task is already requested by another freelancer.</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
 </body>
 </html>
