@@ -2,134 +2,189 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Freelancer | YT ScriptGen Hub</title>
-  <link rel="stylesheet" href="/static/style.css">
+  <title>Freelancer Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #e0f7ff, #fff1f8);
       margin: 0;
-      padding: 30px;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #fdfbfb, #ebedee);
-      color: #2c3e50;
+      padding: 40px 20px;
+      animation: gradientMove 10s ease infinite;
     }
 
-    h2 {
-      margin-bottom: 25px;
-      color: #2c3e50;
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 32px;
+      color: #2d2d2d;
     }
 
-    .task-list {
+    .task-container {
       display: flex;
-      flex-direction: column;
+      flex-wrap: wrap;
       gap: 25px;
-      animation: fadeIn 0.8s ease-in-out;
+      justify-content: center;
     }
 
-    .task-card {
-      background: #fff;
-      border-radius: 10px;
-      padding: 20px 25px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      transition: transform 0.3s ease;
+    .task-box {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 25px;
+      width: 300px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .task-card:hover {
-      transform: scale(1.01);
+    .task-box:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.1);
     }
 
-    .task-card p {
-      margin: 8px 0;
-      font-size: 15px;
+    .task-box h3 {
+      margin-top: 0;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .task-box p {
+      margin: 6px 0;
+      font-size: 14px;
+    }
+
+    .status {
+      margin-top: 10px;
+      font-weight: 600;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .status strong {
+      text-transform: capitalize;
+    }
+
+    .status-accepted {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-rejected {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-other {
+      background: #f3f4f6;
+      color: #4b5563;
+    }
+
+    .request-form {
+      margin-top: 12px;
     }
 
     textarea {
       width: 100%;
+      height: 70px;
+      resize: none;
       padding: 10px;
-      border-radius: 6px;
       border: 1px solid #ccc;
-      margin-top: 8px;
+      border-radius: 8px;
       font-size: 14px;
-      resize: vertical;
+      font-family: inherit;
+      transition: border-color 0.3s ease;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #3b82f6;
     }
 
     button {
-      background-color: #27ae60;
+      background: linear-gradient(to right, #22c55e, #16a34a);
       color: white;
       border: none;
       padding: 10px 16px;
-      border-radius: 6px;
+      border-radius: 8px;
+      font-size: 14px;
       cursor: pointer;
-      font-size: 15px;
-      margin-top: 10px;
-      transition: background-color 0.3s ease;
+      transition: all 0.2s ease;
     }
 
     button:hover {
-      background-color: #1f8f4b;
+      transform: scale(1.05);
+      background: linear-gradient(to right, #16a34a, #15803d);
     }
 
-    .no-tasks {
-      font-size: 16px;
-      color: #777;
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
-    .back-btn {
-      margin-top: 30px;
-      display: inline-block;
-      text-decoration: none;
-      background-color: #666;
-      color: white;
-      padding: 8px 12px;
-      border-radius: 5px;
-    }
-
-    .back-btn:hover {
-      background-color: #444;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(25px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
+    @media (max-width: 768px) {
+      .task-box {
+        width: 100%;
+        max-width: 360px;
       }
     }
   </style>
 </head>
 <body>
+  <h1>📌 Available Tasks</h1>
 
-  <h2>💼 Freelancer Dashboard</h2>
+  <div class="task-container">
+    {% for post in posts %}
+      <div class="task-box">
+        <h3>{{ post.need }}</h3>
+        <p><strong>💰 Budget:</strong> ₹{{ post.budget }}</p>
+        <p><strong>⏳ Duration:</strong>
+          {% if post.duration %}
+            {{ post.duration }} day{{ 's' if post.duration != '1' else '' }}
+          {% else %}
+            Not specified
+          {% endif %}
+        </p>
 
-  <div class="task-list">
-    {% if posts %}
-      {% for post in posts %}
-        <div class="task-card">
-          <p><strong>Topic:</strong> {{ post.need }}</p>
-          <p><strong>Deadline:</strong> {{ post.duration }} days</p>
-          <p><strong>Budget:</strong> ₹{{ post.budget }}</p>
+        {% if post.freelancer_email == user_email %}
+          <p class="status {% if post.status == 'accepted' %}status-accepted{% elif post.status == 'rejected' %}status-rejected{% elif post.status == 'pending' %}status-pending{% else %}status-other{% endif %}">
+            🔔 Request Status: <strong>{{ post.status }}</strong>
+          </p>
+          <p><strong>💬 Your message:</strong><br> {{ post.freelancer_message }}</p>
 
-          <form method="POST" action="/respond">
+        {% elif not post.freelancer_email %}
+          <form class="request-form" method="POST" action="/respond">
+            <textarea name="message" placeholder="Write your request message..." required></textarea>
             <input type="hidden" name="post_id" value="{{ loop.index0 }}">
-            <label for="message-{{ loop.index0 }}"><strong>📋 Your contact & experience:</strong></label>
-            <textarea id="message-{{ loop.index0 }}" name="message" rows="4" placeholder="(Include phone, email/whatsapp/insta, skills, experience, expected pay...) all in one paragraph." required></textarea>
-            <button type="submit">📨 Submit Request</button>
+            <button type="submit">🚀 Send Request</button>
           </form>
-        </div>
-      {% endfor %}
-    {% else %}
-      <p class="no-tasks">No tasks available right now. Check back later!</p>
-    {% endif %}
+        {% else %}
+          <p class="status status-other">⚠️ This task is already requested by another freelancer.</p>
+        {% endif %}
+      </div>
+    {% endfor %}    
   </div>
-
-  <a href="/hub" class="back-btn">⬅ Back to Hub</a>
-{% if notification %}
-  <div style="padding: 15px; background: #d4edda; color: #155724; border-radius: 6px; margin-bottom: 20px;">
-    {{ notification }}
+    <div style="text-align: center; margin-top: 40px;">
+    <a href="/hub">
+      <button style="
+        background: linear-gradient(to right, #3b82f6, #2563eb);
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 14px;
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        🔙 Back to Hub
+      </button>
+    </a>
   </div>
-{% endif %}
 
 </body>
 </html>

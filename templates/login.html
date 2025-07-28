@@ -1,78 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Login | YT ScriptGen</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
-            background: #f4f4f4;
-        }
+  <meta charset="UTF-8">
+  <title>Login | YT ScriptGen</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-        .login-container {
-            background: white;
-            display: inline-block;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to bottom right, #dbeafe, #fce7f3);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #2c3e50;
+    }
 
-        input {
-            display: block;
-            margin: 10px auto;
-            padding: 10px;
-            width: 250px;
-            font-size: 16px;
-        }
+    .login-container {
+      background: #ffffff;
+      padding: 40px 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 100%;
+      max-width: 360px;
+      animation: fadeIn 0.6s ease-out;
+    }
 
-        button {
-            padding: 10px 25px;
-            font-size: 16px;
-            margin: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+    h2 {
+      margin-bottom: 24px;
+      color: #1f2937;
+    }
 
-        .google-btn {
-            background-color: #4285F4;
-            color: white;
-        }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: border 0.3s;
+    }
 
-        .email-btn {
-            background-color: #28a745;
-            color: white;
-        }
+    input:focus {
+      border-color: #6366f1;
+      outline: none;
+    }
 
-        #error-message {
-            color: red;
-            margin-top: 15px;
-        }
-    </style>
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      margin-top: 12px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .email-btn {
+      background-color: #22c55e;
+      color: white;
+    }
+
+    .google-btn {
+      background-color: #4285F4;
+      color: white;
+    }
+
+    #error-message {
+      color: #ef4444;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
+    hr {
+      margin: 20px 0;
+      border: none;
+      border-top: 1px solid #eee;
+    }
+
+    .signup-link {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .signup-link a {
+      color: #3b82f6;
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    .signup-link a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 13px;
+      color: #555;
+    }
+
+    footer span {
+      font-weight: 600;
+      color: #6366f1;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 400px) {
+      .login-container {
+        padding: 30px 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2>Login to YT ScriptGen</h2>
 
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Password">
+  <div class="login-container">
+    <h2>🔐 Login to YT ScriptGen</h2>
 
-        <button class="email-btn" onclick="loginWithEmailPassword()">Login with Email</button>
-        <hr>
-        <button class="google-btn" onclick="loginWithGoogle()">Sign in with Google</button>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
 
-        <p id="error-message"></p>
+    <button class="email-btn" onclick="loginWithEmailPassword()">Login with Email</button>
+
+    <hr>
+
+    <button class="google-btn" onclick="loginWithGoogle()">Sign in with Google</button>
+
+    <p id="error-message"></p>
+
+    <div class="signup-link">
+      Don't have an account? <a href="/signup">Sign up</a>
     </div>
-    <p>Don't have an account? <a href="/signup">Sign up</a></p>
+  </div>
 
+  <footer>
+    🚀 Built by <span>Bharanidharan</span>, Founder of <span>Scripty</span>
+  </footer>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
-    <!-- Your JS -->
-    <script src="/static/login.js"></script>
+  <!-- Your Login Logic -->
+  <script src="/static/login.js"></script>
 </body>
 </html>
