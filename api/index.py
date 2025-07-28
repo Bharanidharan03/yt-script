@@ -28,13 +28,11 @@ def save_tasks(tasks):
     with open(TASK_FILE, 'w') as f:
         json.dump(tasks, f, indent=2)
 
-cred_path = os.getenv("FIREBASE_KEY_PATH")
-if cred_path.endswith(".json"):
-    cred = credentials.Certificate(cred_path)
-else:
-    cred_dict = json.loads(os.getenv("FIREBASE_KEY_JSON"))
-    cred = credentials.Certificate(cred_dict)
-
+cred_json = os.environ.get("FIREBASE_KEY_JSON")
+cred_dict = json.loads(cred_json)
+cred = credentials.Certificate(cred_dict)
+firebase_admin.initialize_app(cred)
+    
 firebase_admin.initialize_app(cred)
 
 def verify_firebase_token(id_token):
